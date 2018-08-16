@@ -814,6 +814,8 @@ static void vty_end_config(struct vty *vty)
 	case KEYCHAIN_KEY_NODE:
 	case VTY_NODE:
 	case BGP_EVPN_VNI_NODE:
+	case BFD_NODE:
+	case BFD_PEER_NODE:
 		vty_config_unlock(vty);
 		vty->node = ENABLE_NODE;
 		break;
@@ -1210,6 +1212,8 @@ static void vty_stop_input(struct vty *vty)
 	case KEYCHAIN_NODE:
 	case KEYCHAIN_KEY_NODE:
 	case VTY_NODE:
+	case BFD_NODE:
+	case BFD_PEER_NODE:
 		vty_config_unlock(vty);
 		vty->node = ENABLE_NODE;
 		break;
@@ -2303,9 +2307,9 @@ void vty_close(struct vty *vty)
 	 * additionally, we'd need to replace these fds with /dev/null. */
 	if (vty->wfd > STDERR_FILENO && vty->wfd != vty->fd)
 		close(vty->wfd);
-	if (vty->fd > STDERR_FILENO) {
+	if (vty->fd > STDERR_FILENO)
 		close(vty->fd);
-	} else
+	if (vty->fd == STDIN_FILENO)
 		was_stdio = true;
 
 	if (vty->buf)

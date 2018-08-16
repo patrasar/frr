@@ -1565,7 +1565,7 @@ static void zread_route_del(ZAPI_HANDLER_ARGS)
 
 	rib_delete(afi, api.safi, zvrf_id(zvrf), api.type, api.instance,
 		   api.flags, &api.prefix, src_p, NULL, table_id, api.metric,
-		   false);
+		   api.distance, false);
 
 	/* Stats */
 	switch (api.prefix.family) {
@@ -1767,7 +1767,7 @@ static void zread_ipv4_delete(ZAPI_HANDLER_ARGS)
 	table_id = zvrf->table_id;
 
 	rib_delete(AFI_IP, api.safi, zvrf_id(zvrf), api.type, api.instance,
-		   api.flags, &p, NULL, NULL, table_id, 0, false);
+		   api.flags, &p, NULL, NULL, table_id, 0, 0, false);
 	client->v4_route_del_cnt++;
 
 stream_failure:
@@ -2191,7 +2191,7 @@ static void zread_ipv6_delete(ZAPI_HANDLER_ARGS)
 		src_pp = NULL;
 
 	rib_delete(AFI_IP6, api.safi, zvrf_id(zvrf), api.type, api.instance,
-		   api.flags, &p, src_pp, NULL, client->rtm_table, 0, false);
+		   api.flags, &p, src_pp, NULL, client->rtm_table, 0, 0, false);
 
 	client->v6_route_del_cnt++;
 
@@ -2245,7 +2245,7 @@ static void zread_hello(ZAPI_HANDLER_ARGS)
 		client->notify_owner = true;
 
 	/* accept only dynamic routing protocols */
-	if ((proto < ZEBRA_ROUTE_MAX) && (proto > ZEBRA_ROUTE_STATIC)) {
+	if ((proto < ZEBRA_ROUTE_MAX) && (proto > ZEBRA_ROUTE_CONNECT)) {
 		zlog_notice(
 			"client %d says hello and bids fair to announce only %s routes vrf=%u",
 			client->sock, zebra_route_string(proto),
@@ -3015,6 +3015,9 @@ void (*zserv_handlers[])(ZAPI_HANDLER_ARGS) = {
 	[ZEBRA_BFD_DEST_UPDATE] = zebra_ptm_bfd_dst_register,
 	[ZEBRA_BFD_DEST_REGISTER] = zebra_ptm_bfd_dst_register,
 	[ZEBRA_BFD_DEST_DEREGISTER] = zebra_ptm_bfd_dst_deregister,
+#if HAVE_BFDD > 0
+	[ZEBRA_BFD_DEST_REPLAY] = zebra_ptm_bfd_dst_replay,
+#endif /* HAVE_BFDD */
 	[ZEBRA_VRF_UNREGISTER] = zread_vrf_unregister,
 	[ZEBRA_VRF_LABEL] = zread_vrf_label,
 	[ZEBRA_BFD_CLIENT_REGISTER] = zebra_ptm_bfd_client_register,

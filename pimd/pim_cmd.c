@@ -5106,11 +5106,6 @@ static int pim_rp_cmd_worker(struct pim_instance *pim, struct vty *vty,
 
 	result = pim_rp_new(pim, rp, group, plist);
 
-	if (result == PIM_MALLOC_FAIL) {
-		vty_out(vty, "%% Out of memory\n");
-		return CMD_WARNING_CONFIG_FAILED;
-	}
-
 	if (result == PIM_GROUP_BAD_ADDRESS) {
 		vty_out(vty, "%% Bad group address specified: %s\n", group);
 		return CMD_WARNING_CONFIG_FAILED;
@@ -7547,7 +7542,12 @@ DEFUN (no_ip_pim_bfd,
 	return CMD_SUCCESS;
 }
 
-DEFUN (ip_pim_bfd_param,
+#if HAVE_BFDD > 0
+DEFUN_HIDDEN(
+#else
+DEFUN(
+#endif /* HAVE_BFDD */
+       ip_pim_bfd_param,
        ip_pim_bfd_param_cmd,
        "ip pim bfd (2-255) (50-60000) (50-60000)",
        IP_STR
@@ -7585,12 +7585,14 @@ DEFUN (ip_pim_bfd_param,
 	return CMD_SUCCESS;
 }
 
+#if HAVE_BFDD == 0
 ALIAS(no_ip_pim_bfd, no_ip_pim_bfd_param_cmd,
       "no ip pim bfd (2-255) (50-60000) (50-60000)", NO_STR IP_STR PIM_STR
       "Enables BFD support\n"
       "Detect Multiplier\n"
       "Required min receive interval\n"
       "Desired min transmit interval\n")
+#endif /* !HAVE_BFDD */
 
 static int ip_msdp_peer_cmd_worker(struct pim_instance *pim, struct vty *vty,
 				   const char *peer, const char *local)
@@ -8906,5 +8908,7 @@ void pim_cmd_init(void)
 	install_element(INTERFACE_NODE, &ip_pim_bfd_cmd);
 	install_element(INTERFACE_NODE, &ip_pim_bfd_param_cmd);
 	install_element(INTERFACE_NODE, &no_ip_pim_bfd_cmd);
+#if HAVE_BFDD == 0
 	install_element(INTERFACE_NODE, &no_ip_pim_bfd_param_cmd);
+#endif /* !HAVE_BFDD */
 }
