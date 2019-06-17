@@ -315,4 +315,6 @@ struct pim_upstream *pim_upstream_keep_alive_timer_proc(
 		struct pim_upstream *up);
 void pim_upstream_fill_static_iif(struct pim_upstream *up,
 				struct interface *incoming);
+void pim_sg_expire(struct pim_instance *pim, struct in_addr source,
+	struct in_addr group);
 #endif /* PIM_UPSTREAM_H */

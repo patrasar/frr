@@ -7360,6 +7360,32 @@ DEFUN (interface_no_ip_pim_drprio,
 	return CMD_SUCCESS;
 }
 
+DEFPY_HIDDEN (ip_pim_sg_force_expire,
+       ip_pim_sg_force_expire_cmd,
+       "ip pim force-expire A.B.C.D$source A.B.C.D$group",
+       IP_STR
+       "pim multicast routing\n"
+       "expaire the (S,G) entry\n"
+       "source address\n"
+       "Group Address\n")
+{
+        PIM_DECLVAR_CONTEXT(vrf, pim);
+
+	if (source.s_addr == INADDR_ANY) {
+		vty_out(vty, "This is specific to (S,G), source should not be zero.\r\n");
+		return CMD_WARNING_CONFIG_FAILED;
+	}
+
+	if (!IN_MULTICAST(ntohl(group.s_addr))) {
+		vty_out(vty, "Bad group address specified\n");
+		return CMD_WARNING_CONFIG_FAILED;
+	}
+
+	pim_sg_expire(pim, source, group);
+
+	return CMD_SUCCESS;
+}
+
 static int pim_cmd_interface_add(struct interface *ifp)
 {
 	struct pim_interface *pim_ifp = ifp->info;
@@ -10250,6 +10276,8 @@ void pim_cmd_init(void)
 	install_element(VRF_NODE, &no_ip_pim_ecmp_rebalance_cmd);
 	install_element(CONFIG_NODE, &ip_pim_mlag_cmd);
 	install_element(CONFIG_NODE, &no_ip_pim_mlag_cmd);
+	install_element(CONFIG_NODE, &ip_pim_sg_force_expire_cmd);
+	install_element(VRF_NODE, &ip_pim_sg_force_expire_cmd);
 
 	install_element(INTERFACE_NODE, &interface_ip_igmp_cmd);
 	install_element(INTERFACE_NODE, &interface_no_ip_igmp_cmd);

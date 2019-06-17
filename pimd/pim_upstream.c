@@ -1868,6 +1868,26 @@ void pim_upstream_remove_lhr_star_pimreg(struct pim_instance *pim,
 	}
 }
 
+void pim_sg_expire(struct pim_instance *pim, struct in_addr source,
+		struct in_addr group)
+{
+	struct prefix_sg sg;
+	struct pim_upstream *up;
+
+	memset(&sg, 0, sizeof(struct prefix_sg));
+
+	sg.src = source;
+	sg.grp = group;
+
+	up = pim_upstream_find(pim, &sg);
+	if (!up)
+		return;
+
+	PIM_UPSTREAM_FLAG_UNSET_DISABLE_KAT_EXPIRY(up->flags);
+	THREAD_OFF(up->t_ka_timer);
+	pim_upstream_keep_alive_timer_proc(up);
+}
+
 void pim_upstream_init(struct pim_instance *pim)
 {
 	char name[64];
