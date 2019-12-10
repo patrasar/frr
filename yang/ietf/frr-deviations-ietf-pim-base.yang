@@ -1,0 +1,73 @@
+module frr-deviations-ietf-pim-base {
+  namespace "urn:ietf:params:xml:ns:yang:frr-deviations-ietf-pim-base";
+  prefix frr-deviations-pim-base;
+
+  import ietf-routing {
+    prefix "rt";
+  }
+
+  import ietf-pim-base {
+    prefix "pim-base";
+  }
+
+  import frr-vrf {
+    prefix frr-vrf;
+  }
+
+  organization
+    "Free Range Routing";
+
+  contact
+    "FRR Users List:       <mailto:frog@lists.frrouting.org>
+     FRR Development List: <mailto:dev@lists.frrouting.org>";
+
+  description
+    "This module defines deviation statements for the ietf-pim-base
+     module.";
+
+  revision 2019-12-03 {
+    description
+      "Initial revision.";
+  }
+
+  deviation "/frr-vrf:lib/frr-vrf:vrf/"
+    + "rt:routing/rt:control-plane-protocols/"
+    + "pim-base:pim/pim-base:graceful-restart" {
+    deviate not-supported;
+  }
+
+  deviation "/frr-vrf:lib/frr-vrf:vrf/"
+    + "rt:routing/rt:control-plane-protocols/"
+    + "pim-base:pim/pim-base:address-family/pim-base:graceful-restart" {
+    deviate not-supported;
+  }
+
+  deviation "/frr-vrf:lib/frr-vrf:vrf/"
+    + "rt:routing/rt:control-plane-protocols/"
+    + "pim-base:pim/pim-base:interfaces/pim-base:interface/pim-base:address-family/pim-base:jp-interval" {
+    deviate not-supported;
+  }
+
+  deviation "/frr-vrf:lib/frr-vrf:vrf/"
+    + "rt:routing/rt:control-plane-protocols/"
+    + "pim-base:pim/pim-base:interfaces/pim-base:interface/pim-base:address-family/pim-base:jp-holdtime-or-multiplier" {
+    deviate not-supported;
+  }
+
+  deviation "/frr-vrf:lib/frr-vrf:vrf/" 
+    + "rt:routing/rt:control-plane-protocols/"
+    + "pim-base:pim/pim-base:interfaces/pim-base:interface/pim-base:address-family/pim-base:propagation-delay" {
+    deviate not-supported;
+  }
+
+  deviation "/frr-vrf:lib/frr-vrf:vrf/"
+    + "rt:routing/rt:control-plane-protocols/"
+    + "pim-base:pim/pim-base:interfaces/pim-base:interface/pim-base:address-family/pim-base:override-interval" {
+    deviate not-supported;
+  }
+
+  deviation "/rt:routing-state/rt:control-plane-protocols/"
+    + "pim-base:pim" {
+    deviate not-supported;
+  }
+}

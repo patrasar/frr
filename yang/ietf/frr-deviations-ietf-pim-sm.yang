@@ -1,0 +1,89 @@
+module frr-deviations-ietf-pim-sm {
+  namespace "urn:ietf:params:xml:ns:yang:frr-deviations-ietf-pim-sm";
+  prefix frr-deviations-pim-sm;
+
+  import ietf-routing {
+    prefix "rt";
+  }
+
+  import ietf-pim-base {
+    prefix "pim-base";
+  }
+
+  import ietf-pim-sm {
+    prefix "pim-sm";
+  }
+
+  import ietf-pim-rp {
+    prefix "pim-rp";
+  }
+
+  import frr-vrf {
+    prefix frr-vrf;
+  }
+
+  organization
+    "Free Range Routing";
+
+  contact
+    "FRR Users List:       <mailto:frog@lists.frrouting.org>
+     FRR Development List: <mailto:dev@lists.frrouting.org>";
+
+  description
+    "This module defines deviation statements for the ietf-pim-base
+     module.";
+
+  revision 2019-12-03 {
+    description
+      "Initial revision.";
+  }
+
+  deviation "/frr-vrf:lib/frr-vrf:vrf/"
+    + "rt:routing/rt:control-plane-protocols/pim-base:pim/"
+    + "pim-base:address-family/pim-sm:sm/pim-sm:asm/pim-sm:anycast-rp" {
+    deviate not-supported;
+  }
+
+  deviation "/frr-vrf:lib/frr-vrf:vrf/"
+    + "rt:routing/rt:control-plane-protocols/pim-base:pim/"
+    + "pim-base:interfaces/pim-base:interface/pim-base:address-family/pim-sm:sm" {
+    deviate not-supported;
+  }
+
+  deviation "/frr-vrf:lib/frr-vrf:vrf/"
+    + "rt:routing/rt:control-plane-protocols/pim-base:pim/"
+    + "pim-base:address-family/pim-rp:rp/"
+    + "pim-rp:static-rp/pim-rp:ipv4-rp/pim-sm:sm" {
+    deviate not-supported;
+  }
+
+  deviation "/frr-vrf:lib/frr-vrf:vrf/"
+    + "rt:routing/rt:control-plane-protocols/pim-base:pim/"
+    + "pim-base:address-family/pim-rp:rp/"
+    + "pim-rp:static-rp/pim-rp:ipv6-rp/pim-sm:sm" {
+    deviate not-supported;
+  }
+
+  deviation "/rt:routing-state/rt:control-plane-protocols/"
+    + "pim-base:pim/pim-base:interfaces/pim-base:interface/"
+    + "pim-base:address-family/pim-sm:sm" {
+    deviate not-supported;
+  }
+
+  deviation "/rt:routing-state/rt:control-plane-protocols/"
+    + "pim-base:pim/pim-base:address-family/pim-rp:rp/"
+    + "pim-rp:static-rp/pim-rp:ipv4-rp/pim-sm:sm" {
+    deviate not-supported;
+  }
+
+  deviation "/rt:routing-state/rt:control-plane-protocols/"
+    + "pim-base:pim/pim-base:address-family/pim-rp:rp/"
+    + "pim-rp:static-rp/pim-rp:ipv6-rp/pim-sm:sm" {
+    deviate not-supported;
+  }
+
+  deviation "/rt:routing-state/rt:control-plane-protocols/"
+    + "pim-base:pim/pim-base:address-family/pim-sm:sm" {
+    deviate not-supported;
+  }
+}

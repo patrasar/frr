@@ -106,6 +106,13 @@ nodist_lib_libfrr_la_SOURCES = \
 	yang/frr-route-types.yang.c \
 	yang/ietf/ietf-routing-types.yang.c \
 	yang/frr-module-translator.yang.c \
+        yang/ietf/ietf-interfaces.yang.c \
+	yang/ietf/ietf-pim-base.yang.c \
+	yang/ietf/ietf-pim-sm.yang.c \
+	yang/ietf/ietf-pim-rp.yang.c \
+	yang/ietf/frr-deviations-ietf-pim-sm.c \
+	yang/ietf/frr-deviations-ietf-pim-rp.c \
+	yang/ietf/frr-deviations-ietf-pim-base.c \
 	# end
 
 vtysh_scan += \
