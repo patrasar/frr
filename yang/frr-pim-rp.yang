@@ -1,0 +1,102 @@
+module frr-pim-rp {
+  yang-version "1.1";
+  namespace "http://frrouting.org/yang/pim-rp";
+
+  prefix frr-pim-rp;
+
+  import ietf-inet-types {
+    prefix "inet";
+  }
+
+  import ietf-routing-types {
+    prefix "rt-types";
+  }
+
+  import frr-routing {
+    prefix "frr-rt";
+  }
+
+  import frr-pim {
+    prefix "frr-pim";
+  }
+
+  organization
+    "Free Range Routing";
+
+  contact
+    "FRR Users List:       <mailto:frog@lists.frrouting.org>
+     FRR Development List: <mailto:dev@lists.frrouting.org>";
+
+  description
+    "The module defines a collection of YANG definitions common for
+     all PIM (Protocol Independent Multicast) RP (Rendezvous Point) model.";
+
+  revision 2017-03-09 {
+    description
+      "Initial revision.";
+    reference
+      "RFC XXXX: A YANG Data Model for PIM RP";
+  }
+
+  typedef plist-ref {
+    type string;
+  }
+
+  /*
+   * Groupings
+   */
+  grouping static-rp-container {
+    description
+      "Grouping of static RP container.";
+
+    container static-rp {
+      description
+        "Containing static RP attributes.";
+
+      list rp {
+        key "rp-address";
+        description
+          "A list of RP addresses.";
+
+        leaf rp-address {
+          type inet:ip-address;
+          description
+            "Specifies a static RP address.";
+        }
+
+        choice group-list-or-prefix-list {
+          description "Use group-list or prefix-list";
+          case group-list {
+            leaf-list group-list {
+              type rt-types:ip-multicast-group-address;
+              description
+                "List of multicast group address.";
+            }
+          }
+          case prefix-list {
+            leaf prefix-list {
+              type plist-ref;
+              description
+                "Group prefix-list filter";
+            }
+          }
+        }
+      }
+    } // static-rp
+  } // static-rp-container
+
+  /*
+   * Configuration data nodes
+   */
+  augment "/frr-rt:routing/frr-rt:control-plane-protocols/"
+    + "frr-rt:control-plane-protocol/frr-pim:pim/frr-pim:pim-instance/"
+    + "frr-pim:address-family" {
+    description "PIM RP augmentation.";
+
+    container rp {
+      description
+        "PIM RP configuration data.";
+      uses static-rp-container;
+    } // rp
+  } // augment
+}
