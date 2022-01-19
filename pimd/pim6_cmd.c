@@ -351,6 +351,59 @@ DEFUN(interface_no_ipv6_pim_boundary_oil,
 			"frr-routing:ipv6");
 }
 
+DEFUN (interface_ipv6_mroute,
+       interface_ipv6_mroute_cmd,
+       "ipv6 mroute INTERFACE X:X::X:X [X:X::X:X]",
+       IPV6_STR
+       "Add multicast route\n"
+       "Outgoing interface name\n"
+       "Group address\n"
+       "Source address\n")
+{
+	int idx_interface = 2;
+	int idx_ipv6 = 3;
+	const char *source_str;
+
+	if (argc == (idx_ipv6 + 1))
+		source_str = "::";
+	else
+		source_str = argv[idx_ipv6 + 1]->arg;
+
+	nb_cli_enqueue_change(vty, "./oif", NB_OP_MODIFY,
+			argv[idx_interface]->arg);
+
+	return nb_cli_apply_changes(vty,
+			FRR_PIM_MROUTE_XPATH,
+			"frr-routing:ipv6", source_str,
+			argv[idx_ipv4]->arg);
+}
+
+DEFUN (interface_no_ipv6_mroute,
+       interface_no_ipv6_mroute_cmd,
+       "no ipv6 mroute INTERFACE X:X::X:X [X:X::X:X]",
+       NO_STR
+       IPV6_STR
+       "Add multicast route\n"
+       "Outgoing interface name\n"
+       "Group Address\n"
+       "Source Address\n")
+{
+	int idx_ipv6 = 4;
+	const char *source_str;
+
+	if (argc == (idx_ipv6 + 1))
+		source_str = "::";
+	else
+		source_str = argv[idx_ipv6 + 1]->arg;
+
+	nb_cli_enqueue_change(vty, ".", NB_OP_DESTROY, NULL);
+
+	return nb_cli_apply_changes(vty,
+			FRR_PIM_MROUTE_XPATH,
+			"frr-routing:ipv6", source_str,
+			argv[idx_ipv4]->arg);
+}
+
 void pim_cmd_init(void)
 {
 	if_cmd_init(pim6_interface_config_write);
@@ -368,5 +421,9 @@ void pim_cmd_init(void)
         install_element(INTERFACE_NODE, &interface_no_ip_pim_sm_cmd);
 	install_element(INTERFACE_NODE, &interface_ipv6_pim_boundary_oil_cmd);
 	install_element(INTERFACE_NODE, &interface_no_ipv6_pim_boundary_oil_cmd);
+
+	// Static mroutes NEB
+	install_element(INTERFACE_NODE, &interface_ip_mroute_cmd);
+	install_element(INTERFACE_NODE, &interface_no_ip_mroute_cmd);
 }
 

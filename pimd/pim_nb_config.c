@@ -2229,6 +2229,11 @@ int lib_interface_pim_address_family_mroute_destroy(
 		yang_dnode_get_ip(&source_addr, args->dnode, "./source-addr");
 		yang_dnode_get_ip(&group_addr, args->dnode, "./group-addr");
 
+#if PIM_IPV == 6
+		/*TBD
+		  pimv6_static_del();*/
+		break;
+#endif
 		if (pim_static_del(pim, iif, oif, group_addr.ip._v4_addr,
 					source_addr.ip._v4_addr)) {
 			snprintf(args->errmsg, args->errmsg_len,
@@ -2306,6 +2311,11 @@ int lib_interface_pim_address_family_mroute_oif_modify(
 		yang_dnode_get_ip(&source_addr, args->dnode, "../source-addr");
 		yang_dnode_get_ip(&group_addr, args->dnode, "../group-addr");
 
+#if PIM_IPV == 6
+		/* TBD
+		    pim6_static_add(); */
+		break;
+#endif
 		if (pim_static_add(pim, iif, oif, group_addr.ip._v4_addr,
 				   source_addr.ip._v4_addr)) {
 			snprintf(args->errmsg, args->errmsg_len,
