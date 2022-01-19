@@ -1601,6 +1601,10 @@ int lib_interface_pim_address_family_pim_enable_modify(struct nb_cb_modify_args 
 	case NB_EV_ABORT:
 		break;
 	case NB_EV_APPLY:
+#if PIM_IPV == 6
+		/* TBD Depends on PIMV6 data structure changes */
+		break;
+#endif
 		ifp = nb_running_get_entry(args->dnode, NULL, true);
 
 		if (yang_dnode_get_bool(args->dnode, NULL)) {
