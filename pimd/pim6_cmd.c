@@ -204,6 +204,64 @@ DEFPY (interface_ipv6_pim_activeactive,
 			"frr-routing:ipv6");
 }
 
+DEFUN_HIDDEN (interface_ipv6_pim_ssm,
+              interface_ipv6_pim_ssm_cmd,
+              "ipv6 pim ssm",
+              IPV6_STR
+              PIM_STR
+              IFACE_PIM_STR)
+{
+	int ret;
+
+	nb_cli_enqueue_change(vty, "./pim-enable", NB_OP_MODIFY, "true");
+
+	ret = nb_cli_apply_changes(vty,
+			FRR_PIM_INTERFACE_XPATH,
+			"frr-routing:ipv6");
+
+	if (ret != NB_OK)
+		return ret;
+
+	vty_out(vty,
+		"WARN: Enabled PIM SM on interface; configure PIM SSM range if needed\n");
+
+	return NB_OK;
+}
+
+DEFUN_HIDDEN (interface_no_ipv6_pim_ssm,
+              interface_no_ipv6_pim_ssm_cmd,
+              "no ipv6 pim ssm",
+              NO_STR
+              IPV6_STR
+              PIM_STR
+              IFACE_PIM_STR)
+{
+	const struct lyd_node *mld_enable_dnode;
+	char mld_if_xpath[XPATH_MAXLEN + 20];
+
+	snprintf(mld_if_xpath, sizeof(mld_if_xpath),
+		 "%s/frr-gmp:gmp/address-family[address-family='%s']",
+		 VTY_CURR_XPATH, "frr-routing:ipv6");
+	mld_enable_dnode = yang_dnode_getf(vty->candidate_config->dnode,
+					    FRR_GMP_ENABLE_XPATH,
+					    VTY_CURR_XPATH,
+					    "frr-routing:ipv6");
+	if (!mld_enable_dnode) {
+		nb_cli_enqueue_change(vty, mld_if_xpath, NB_OP_DESTROY, NULL);
+		nb_cli_enqueue_change(vty, ".", NB_OP_DESTROY, NULL);
+	} else {
+		if (!yang_dnode_get_bool(mld_enable_dnode, ".")) {
+			nb_cli_enqueue_change(vty, mld_if_xpath, NB_OP_DESTROY,
+					NULL);
+			nb_cli_enqueue_change(vty, ".", NB_OP_DESTROY, NULL);
+		} else
+			nb_cli_enqueue_change(vty, "./pim-enable", NB_OP_MODIFY,
+					"false");
+	}
+
+	return nb_cli_apply_changes(vty, FRR_PIM_INTERFACE_XPATH,
+			"frr-routing:ipv6");
+}
 
 void pim_cmd_init(void)
 {
@@ -216,4 +274,6 @@ void pim_cmd_init(void)
 	install_element(INTERFACE_NODE, &interface_ipv6_pim_hello_cmd);
 	install_element(INTERFACE_NODE, &interface_no_ipv6_pim_hello_cmd);
 	install_element(INTERFACE_NODE, &interface_ipv6_pim_activeactive_cmd);
+	install_element(INTERFACE_NODE, &interface_ipv6_pim_ssm_cmd);
+	install_element(INTERFACE_NODE, &interface_no_ipv6_pim_ssm_cmd);
 }
