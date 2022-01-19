@@ -1985,6 +1985,10 @@ int lib_interface_pim_address_family_dr_priority_modify(
 
 	switch (args->event) {
 	case NB_EV_VALIDATE:
+#if PIM_IPV == 6
+		/* TBD Depends on PIMV6 data structure changes */
+		break;
+#endif
 		if_dnode = yang_dnode_get_parent(args->dnode, "interface");
 		if (!is_pim_interface(if_dnode)) {
 			snprintf(args->errmsg, args->errmsg_len,
@@ -1996,6 +2000,10 @@ int lib_interface_pim_address_family_dr_priority_modify(
 	case NB_EV_ABORT:
 		break;
 	case NB_EV_APPLY:
+#if PIM_IPV == 6
+		/* TBD Depends on PIMV6 data structure changes */
+		break;
+#endif
 		ifp = nb_running_get_entry(args->dnode, NULL, true);
 		pim_ifp = ifp->info;
 		old_dr_prio = pim_ifp->pim_dr_priority;

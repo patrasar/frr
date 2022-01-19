@@ -90,11 +90,44 @@ DEFUN (interface_no_ipv6_pim,
 			"frr-routing:ipv6");
 }
 
+DEFUN (interface_ipv6_pim_drprio,
+       interface_ipv6_pim_drprio_cmd,
+       "ipv6 pim drpriority (1-4294967295)",
+       IPV6_STR
+       PIM_STR
+       "Set the Designated Router Election Priority\n"
+       "Value of the new DR Priority\n")
+{
+	int idx_number = 3;
+
+	nb_cli_enqueue_change(vty, "./dr-priority", NB_OP_MODIFY,
+			argv[idx_number]->arg);
+
+	return nb_cli_apply_changes(vty, FRR_PIM_INTERFACE_XPATH,
+			"frr-routing:ipv6");
+}
+
+DEFUN (interface_no_ipv6_pim_drprio,
+       interface_no_ipv6_pim_drprio_cmd,
+       "no ip pim drpriority [(1-4294967295)]",
+       NO_STR
+       IPV6_STR
+       PIM_STR
+       "Revert the Designated Router Priority to default\n"
+       "Old Value of the Priority\n")
+{
+	nb_cli_enqueue_change(vty, "./dr-priority", NB_OP_DESTROY, NULL);
+
+	return nb_cli_apply_changes(vty, FRR_PIM_INTERFACE_XPATH,
+				    "frr-routing:ipv6");
+}
+
 void pim_cmd_init(void)
 {
 	if_cmd_init(pim6_interface_config_write);
 
 	install_element(INTERFACE_NODE, &interface_ipv6_pim_cmd);
 	install_element(INTERFACE_NODE, &interface_no_ipv6_pim_cmd);
-
+	install_element(INTERFACE_NODE, &interface_ipv6_pim_drprio_cmd);
+	install_element(INTERFACE_NODE, &interface_no_ipv6_pim_drprio_cmd);
 }
