@@ -965,8 +965,12 @@ void pim_mlag_register(void)
 
 	router->mlag_process_register = true;
 
+#if PIM_IPV == 6
+	/* TBD pim6_mlag_register_handler */
+#else
 	thread_add_event(router->master, pim_mlag_register_handler, NULL, 0,
 			 NULL);
+#endif
 }
 
 static int pim_mlag_deregister_handler(struct thread *thread)
