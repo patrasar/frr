@@ -2120,6 +2120,10 @@ int lib_interface_pim_address_family_multicast_boundary_oil_modify(
 	case NB_EV_PREPARE:
 		break;
 	case NB_EV_APPLY:
+#if PIM_IPV == 6
+		/* TBD Depends on MLD data structure changes */
+		break;
+#endif
 		ifp = nb_running_get_entry(args->dnode, NULL, true);
 		pim_ifp = ifp->info;
 		plist = yang_dnode_get_string(args->dnode, NULL);

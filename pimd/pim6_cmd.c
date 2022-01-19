@@ -314,6 +314,43 @@ DEFUN_HIDDEN (interface_no_ipv6_pim_sm,
 			"frr-routing:ipv6");
 }
 
+/* boundaries */
+DEFUN(interface_ipv6_pim_boundary_oil,
+      interface_ipv6_pim_boundary_oil_cmd,
+      "ipv6 multicast boundary oil WORD",
+      IPV6_STR
+      "Generic multicast configuration options\n"
+      "Define multicast boundary\n"
+      "Filter OIL by group using prefix list\n"
+      "Prefix list to filter OIL with\n")
+{
+	nb_cli_enqueue_change(vty, "./multicast-boundary-oil", NB_OP_MODIFY,
+			argv[4]->arg);
+
+	return nb_cli_apply_changes(vty,
+			FRR_PIM_INTERFACE_XPATH,
+			"frr-routing:ipv6");
+
+}
+
+DEFUN(interface_no_ipv6_pim_boundary_oil,
+      interface_no_ipv6_pim_boundary_oil_cmd,
+      "no ipv6 multicast boundary oil [WORD]",
+      NO_STR
+      IPV6_STR
+      "Generic multicast configuration options\n"
+      "Define multicast boundary\n"
+      "Filter OIL by group using prefix list\n"
+      "Prefix list to filter OIL with\n")
+{
+	nb_cli_enqueue_change(vty, "./multicast-boundary-oil", NB_OP_DESTROY,
+			NULL);
+
+	return nb_cli_apply_changes(vty,
+			FRR_PIM_INTERFACE_XPATH,
+			"frr-routing:ipv6");
+}
+
 void pim_cmd_init(void)
 {
 	if_cmd_init(pim6_interface_config_write);
@@ -329,5 +366,7 @@ void pim_cmd_init(void)
 	install_element(INTERFACE_NODE, &interface_no_ipv6_pim_ssm_cmd)
         install_element(INTERFACE_NODE, &interface_ip_pim_sm_cmd);
         install_element(INTERFACE_NODE, &interface_no_ip_pim_sm_cmd);
+	install_element(INTERFACE_NODE, &interface_ipv6_pim_boundary_oil_cmd);
+	install_element(INTERFACE_NODE, &interface_no_ipv6_pim_boundary_oil_cmd);
 }
 
