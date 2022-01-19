@@ -122,6 +122,62 @@ DEFUN (interface_no_ipv6_pim_drprio,
 				    "frr-routing:ipv6");
 }
 
+DEFUN (interface_ipv6_pim_hello,
+       interface_ipv6_pim_hello_cmd,
+       "ipv6 pim hello (1-65535) [(1-65535)]",
+       IPV6_STR
+       PIM_STR
+       IFACE_PIM_HELLO_STR
+       IFACE_PIM_HELLO_TIME_STR
+       IFACE_PIM_HELLO_HOLD_STR)
+{
+        int idx_time = 3;
+        int idx_hold = 4;
+        const struct lyd_node *mld_enable_dnode;
+
+	mld_enable_dnode =
+		yang_dnode_getf(vty->candidate_config->dnode,
+				FRR_GMP_ENABLE_XPATH, VTY_CURR_XPATH,
+				"frr-routing:ipv6");
+	if (!mld_enable_dnode) {
+		nb_cli_enqueue_change(vty, "./pim-enable", NB_OP_MODIFY,
+				"true");
+	} else {
+		if (!yang_dnode_get_bool(mld_enable_dnode, "."))
+			nb_cli_enqueue_change(vty, "./pim-enable", NB_OP_MODIFY,
+					"true");
+	}
+
+	nb_cli_enqueue_change(vty, "./hello-interval", NB_OP_MODIFY,
+			argv[idx_time]->arg);
+
+	if (argc == idx_hold + 1)
+		nb_cli_enqueue_change(vty, "./hello-holdtime", NB_OP_MODIFY,
+				argv[idx_hold]->arg);
+
+	return nb_cli_apply_changes(vty,
+			FRR_PIM_INTERFACE_XPATH,
+			"frr-routing:ipv6");
+}
+
+DEFUN (interface_no_ipv6_pim_hello,
+       interface_no_ipv6_pim_hello_cmd,
+       "no ipv6 pim hello [(1-65535) [(1-65535)]]",
+       NO_STR
+       IPV6_STR
+       PIM_STR
+       IFACE_PIM_HELLO_STR
+       IGNORED_IN_NO_STR
+       IGNORED_IN_NO_STR)
+{
+	nb_cli_enqueue_change(vty, "./hello-interval", NB_OP_DESTROY, NULL);
+	nb_cli_enqueue_change(vty, "./hello-holdtime", NB_OP_DESTROY, NULL);
+
+	return nb_cli_apply_changes(vty,
+			FRR_PIM_INTERFACE_XPATH,
+			"frr-routing:ipv6");
+}
+
 void pim_cmd_init(void)
 {
 	if_cmd_init(pim6_interface_config_write);
@@ -130,4 +186,6 @@ void pim_cmd_init(void)
 	install_element(INTERFACE_NODE, &interface_no_ipv6_pim_cmd);
 	install_element(INTERFACE_NODE, &interface_ipv6_pim_drprio_cmd);
 	install_element(INTERFACE_NODE, &interface_no_ipv6_pim_drprio_cmd);
+	install_element(INTERFACE_NODE, &interface_ipv6_pim_hello_cmd);
+	install_element(INTERFACE_NODE, &interface_no_ipv6_pim_hello_cmd);
 }
