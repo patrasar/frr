@@ -47,7 +47,7 @@ void pim_rp_free(struct pim_instance *pim);
 
 void pim_rp_list_hash_clean(void *data);
 
-int pim_rp_new(struct pim_instance *pim, struct in_addr rp_addr,
+int pim_rp_new(struct pim_instance *pim, pim_addr rp_addr,
 	       struct prefix group, const char *plist,
 	       enum rp_source rp_src_flag);
 int pim_rp_del_config(struct pim_instance *pim, const char *rp,
